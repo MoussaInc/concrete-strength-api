@@ -1,27 +1,17 @@
+# 📊 🧠 Projets de Data Science
 
-# 🛳️ Titanic - Prédiction de survie
+Ce dépôt regroupe 3 projets concrets de data science que j’ai réalisés, autour de la modélisation prédictive, l'analyse exploratoire et la mise en forme de jeux de données réels.
 
-Ce projet vise à prédire la survie des passagers du Titanic à partir de données démographiques et socio-économiques.
+## 🚀 Projets inclus
 
-## 🎯 Objectif
+| Projet | Description | Technologies |
+|--------|-------------|--------------|
+| [🔹 Titanic Survival](./projets/1-titanic-survival) | Prédiction de survie des passagers du Titanic (modèle ML supervisé) | `pandas`, `scikit-learn`, `matplotlib`, `xgboost` |
+| [🔸 NYC Yellow Taxi (2021)](./projets/2-nyc-yellow-taxi-2021) | Analyse des courses de taxis à New York en 2021 | `pandas`, `seaborn`, `datetime` |
+| [🔷 Résistance du Béton](./projets/3-resistance-beton) | Prédiction de la résistance à la compression du béton | `xgboost`, `sklearn`, `numpy` |
 
-- Nettoyage et préparation des données
-- Analyse exploratoire
-- Modélisation avec des classifieurs (LogisticRegression, RandomForest, XGBoost)
-- Évaluation des performances
-
-## 📊 Données
-
-Source : [Kaggle Titanic Dataset](https://www.kaggle.com/competitions/titanic/data)
-
-## 🧪 Résultat
-
-- Précision du modèle : ~82%
-- Analyse d’importance des variables : Sexe, Classe sociale, Lieu d'Embarquement
-- Visualisations interactives dans le notebook
-
-## 🚀 Lancer le projet
+## 🛠️ Installation
 
 ```bash
-jupyter notebook titanic.ipynb
->>>>>>> 5804356 (Initial commit - ajout du projet Titanic Data Science)
+pip install -r requirements.txt
+```
