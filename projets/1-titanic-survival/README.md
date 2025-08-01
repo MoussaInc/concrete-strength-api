@@ -21,7 +21,7 @@ Les données sont placées dans le dossier `./data/`.
 ## 🧪 Résultats clés
 
 - **Précision du meilleur modèle** : ~83%
-- **Variables influentes** : `Sexe`, `Classe (Pclass)`, `SibSp (présence de proches à bord). 
+- **Variables influentes** : `Sexe`, `Classe (Pclass)`, `SibSp` (présence de proches à bord). 
 - Étonnamment, le prix du billet (`Fare`), souvent perçu comme indicateur de statut, n’est pas si influent ici (comme quoi, on peut payer cher… et couler quand même. 😬).
 - Visualisations et graphiques disponibles dans le notebook
 
