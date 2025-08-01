@@ -20,7 +20,7 @@ Les données sont placées dans le dossier `./data/`.
 
 ## 🧪 Résultats clés
 
-- **Précision du meilleur modèle** : ~82%
+- **Précision du meilleur modèle** : ~83%
 - **Variables influentes** : `Sexe`, `Classe (Pclass)`, `Port d’embarquement (Embarked)`, `Tarif (Fare)`
 - Visualisations et graphiques disponibles dans le notebook
 
