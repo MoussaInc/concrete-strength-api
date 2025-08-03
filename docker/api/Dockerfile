@@ -2,23 +2,21 @@
 
 FROM python:3.11-slim
 
-# Répertoire pour l'application FastAPI
+# Crée un dossier pour ton app
 WORKDIR /app
+
+# On copie tout le repo dans le conteneur (Render clone à la racine du repo)
 COPY . .
+
+# Déclare le PYTHONPATH
 ENV PYTHONPATH=/app
 
-# Copie des fichiers nécessaires
-COPY src/api/ ./api/
-COPY models/ ./models/
-COPY config/config.yaml ./config/config.yaml
-COPY docker/api/requirements.txt .
-
-# Installation des dépendances
+# Installe les dépendances
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r docker/api/requirements.txt
 
-# Port de l'API FastAPI
+# Expose le port de FastAPI
 EXPOSE 8000
 
-# Lancer l'API
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Commande de démarrage
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
