@@ -26,7 +26,9 @@ load_custom_css()
 display_logo()
 display_header()
 
-API_URL = os.getenv("API_URL", "http://api:8000")
+#API_URL = os.getenv("API_URL", "http://api:8000")
+API_URL = os.getenv("API_URL")
+st.sidebar.markdown(f"🌐 API_URL détectée : `{API_URL}`") 
 
 INPUT_NAMES = ["cement", "slag", "fly_ash", "water", "superplasticizer", "coarse_aggregate", "fine_aggregate", "age"]
 
