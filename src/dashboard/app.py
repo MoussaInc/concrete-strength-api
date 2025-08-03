@@ -37,16 +37,24 @@ with tab1:
     st.subheader("Entrez les paramètres du béton")
     features = create_input_form(INPUT_NAMES)
 
-    if st.button("Prédire la résistance"):
-        result = call_prediction_api(API_URL, features)
-        if result["success"]:
-            try:
-                value = float(result['value'])
-                st.success(f"Résistance prédite : {value:.2f} MPa")
-            except (ValueError, TypeError):
-                st.error("La prédiction reçue n'est pas un nombre valide.")
-        else:
-            st.error(result["message"])
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        if st.button("Prédire la résistance"):
+            result = call_prediction_api(API_URL, features)
+            if result["success"]:
+                try:
+                    value = float(result['value'])
+                    st.success(f"Résistance prédite : {value:.2f} MPa")
+                except (ValueError, TypeError):
+                    st.error("La prédiction reçue n'est pas un nombre valide.")
+            else:
+                st.error(result["message"])
+
+    with col2:
+        if st.button("🔄 Réinitialiser", help="Effacer tous les champs et recommencer"):
+            st.experimental_rerun()
+
 
 with tab2:
     st.subheader("Import d’un fichier CSV pour prédiction en lot")
