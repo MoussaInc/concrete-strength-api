@@ -4,21 +4,19 @@ FROM python:3.11-slim
 
 # Répertoire pour Streamlit
 WORKDIR /app
+
+# Copie tout le contenu du repo cloné
 COPY . .
+
+# Définir PYTHONPATH
 ENV PYTHONPATH=/app
 
-# Copie des fichiers utiles
-COPY src/dashboard/ ./dashboard/
-COPY models/ ./models/
-COPY config/config.yaml ./config/config.yaml
-COPY docker/dashboard/requirements.txt .
-
-# Installation des dépendances
+# Installer les dépendances
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r docker/dashboard/requirements.txt
 
-# Port du dashboard Streamlit
+# Port pour Streamlit
 EXPOSE 8501
 
-# Lancer l'application Streamlit
-CMD ["streamlit", "run", "dashboard/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Démarrage l'application Streamlit
+CMD ["streamlit", "run", "src/dashboard/app.py", "--server.port=8501", "--server.address=0.0.0.0"]

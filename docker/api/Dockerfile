@@ -2,10 +2,10 @@
 
 FROM python:3.11-slim
 
-# Crée un dossier pour ton app
+# Dossier pour ton app
 WORKDIR /app
 
-# On copie tout le repo dans le conteneur (Render clone à la racine du repo)
+# Copie tout le repo dans le conteneur (Render clone à la racine du repo)
 COPY . .
 
 # Déclare le PYTHONPATH
