@@ -54,8 +54,9 @@ with tab1:
                 st.error(result["message"])
 
     with col2:
-        if st.button("🔄 Réinitialiser", help="Effacer tous les champs et recommencer"):
-            st.experimental_rerun()
+        if st.button("🔄 Réinitialiser", type="primary", help="Effacer tous les champs et recommencer"):
+            st.session_state.clear()  # Optionnel : réinitialise tout l’état
+            st.rerun()
 
 
 with tab2:
