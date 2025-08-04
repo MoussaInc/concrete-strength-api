@@ -14,16 +14,3 @@ data/raw/*
 data/processed/*
 data/predictions/*
 
-# Jupyter
-.ipynb_checkpoints
-
-# Logs
-*.log
-
-# Docker
-*.log
-
-# Others
-packages.microsoft.gpg
-Dockerfile
-docker-compose.yml

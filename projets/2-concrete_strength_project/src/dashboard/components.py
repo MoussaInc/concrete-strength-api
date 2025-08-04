@@ -3,6 +3,9 @@
 import os
 import streamlit as st
 import requests
+# Fonction utilitaire pour encoder l'image en base64
+import base64
+
 
 def load_custom_css(css_path="src/dashboard/static/style.css"):
     """
@@ -15,14 +18,27 @@ def load_custom_css(css_path="src/dashboard/static/style.css"):
     else:
         st.warning(f"Fichier CSS non trouvé à : {css_path}")
 
-def display_logo(path="src/dashboard/static/images/logo.png", width=100):
+def display_logo(path="src/dashboard/static/images/logo.png", width=100, cv_url="https://www.poussaim.org"):
     """
-    Affiche le logo si le chemin est valide, sinon affiche un warning.
+    Affiche le logo cliquable (lien vers mon site perso) si le chemin est valide, sinon affiche un warning.
     """
     if path and os.path.exists(path):
-        st.image(path, width=width)
+        # Utiliser HTML pour afficher une image cliquable
+        logo_html = f"""
+        <a href="{cv_url}" target="_blank">
+            <img src="data:image/png;base64,{get_base64_of_bin_file(path)}" width="{width}">
+        </a>
+        """
+        st.markdown(logo_html, unsafe_allow_html=True)
     else:
         st.warning("Logo non trouvé.")
+
+
+
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
 def display_header():
     """
@@ -37,11 +53,6 @@ def display_header():
             Prédiction de la résistance en compression simple du béton (MPa) <br>
             selon sa composition et sa durée de cure
         </h4>
-        <p style="font-size: 16px; color: #6c757d;">
-            Créé par <a href="https://poussaim.org" target="_blank" style="color: #f68b1e; text-decoration: none; font-weight: 600;">
-                Moussa MBALLO
-            </a>
-        </p>
     </div>
     <hr style="border-top: 3px solid #f68b1e; width: 50%; margin: 1.5rem auto 2rem auto; border-radius: 2px;" />
     """, unsafe_allow_html=True)
@@ -124,3 +135,21 @@ def call_batch_prediction_api(api_url, file):
             return {"success": False, "message": response.json().get("detail", "Erreur API")}
     except Exception as e:
         return {"success": False, "message": str(e)}
+
+def show_input_instructions():
+    st.markdown("""
+    ### 🧾 Paramètres attendus pour la prédiction :
+
+    Le modèle prend en compte les 8 paramètres suivants (unité : kg/m³ sauf âge en jours) :
+
+    - **cement** : quantité de ciment   
+    - **slag** : laitier de haut fourneau  
+    - **fly_ash** : cendres volantes  
+    - **water** : quantité d’eau  
+    - **superplasticizer** : adjuvant  
+    - **coarse_aggregate** : granulats grossiers  
+    - **fine_aggregate** : granulats fins  
+    - **age** : durée de cure du béton (en jours)
+
+    Ces colonnes doivent être présentes dans le fichier CSV pour les prédictions en lot.
+    """)
