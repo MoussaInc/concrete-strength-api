@@ -135,3 +135,21 @@ def call_batch_prediction_api(api_url, file):
             return {"success": False, "message": response.json().get("detail", "Erreur API")}
     except Exception as e:
         return {"success": False, "message": str(e)}
+
+def show_input_instructions():
+    st.markdown("""
+    ### 🧾 Paramètres attendus pour la prédiction :
+
+    Le modèle prend en compte les 8 paramètres suivants (unité : kg/m³ sauf âge en jours) :
+
+    - **cement** : quantité de ciment   
+    - **slag** : laitier de haut fourneau  
+    - **fly_ash** : cendres volantes  
+    - **water** : quantité d’eau  
+    - **superplasticizer** : adjuvant  
+    - **coarse_aggregate** : granulats grossiers  
+    - **fine_aggregate** : granulats fins  
+    - **age** : durée de cure du béton (en jours)
+
+    Ces colonnes doivent être présentes dans le fichier CSV pour les prédictions en lot.
+    """)

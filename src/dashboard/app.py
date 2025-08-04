@@ -11,7 +11,8 @@ from components import (
     display_footer,
     create_input_form,
     call_prediction_api,
-    call_batch_prediction_api
+    call_batch_prediction_api,
+    show_input_instructions
 )
 
 # --- Configuration de la page ---
@@ -26,11 +27,27 @@ load_custom_css()
 display_logo()
 display_header()
 
+
 #API_URL = os.getenv("API_URL", "http://api:8000")
 API_URL = os.getenv("API_URL")
 st.sidebar.markdown(f"🌐 API_URL détectée : `{API_URL}`") 
 
 INPUT_NAMES = ["cement", "slag", "fly_ash", "water", "superplasticizer", "coarse_aggregate", "fine_aggregate", "age"]
+
+st.markdown("""
+Pour réaliser une prédiction en batch, veuillez charger un fichier **CSV** contenant les colonnes suivantes :
+
+- `cement` : quantité de ciment (kg/m³)  
+- `slag` : quantité de laitier (kg/m³)  
+- `fly_ash` : quantité de cendre volante (kg/m³)  
+- `water` : quantité d’eau (kg/m³)  
+- `superplasticizer` : adjuvant superplastifiant (kg/m³)  
+- `coarse_aggregate` : granulats grossiers (kg/m³)  
+- `fine_aggregate` : granulats fins (kg/m³)  
+- `age` : âge du béton (en jours)
+
+⚠️ **Les noms de colonnes doivent être strictement identiques** à ceux listés ci-dessus.
+""")
 
 # --- Onglets ---
 tab1, tab2 = st.tabs(["Prédiction individuelle", "Prédiction en batch"])
@@ -62,6 +79,7 @@ with tab1:
 with tab2:
     st.subheader("Import d’un fichier CSV pour prédiction en lot")
     st.markdown("Colonnes attendues : `" + ", ".join(INPUT_NAMES) + "`")
+    #show_input_instructions
 
     uploaded = st.file_uploader("Chargez un fichier CSV", type="csv")
 
