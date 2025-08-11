@@ -1,49 +1,36 @@
-# src/dashboard/components.py
-
+import json
 import os
 import streamlit as st
 import requests
-# Fonction utilitaire pour encoder l'image en base64
 import base64
+import pandas as pd
+from typing import Dict, List, Optional
 
 
 def load_custom_css(css_path="src/dashboard/static/style.css"):
-    """
-    Chargement et injection du CSS personnalisé dans l'app Streamlit.
-    """
-
+    """Charge le CSS existant sans modification"""
     if os.path.exists(css_path):
         with open(css_path) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-    else:
-        st.warning(f"Fichier CSS non trouvé à : {css_path}")
 
 def display_logo(path="src/dashboard/static/images/logo.png", width=100, cv_url="https://www.poussaim.org"):
-    """
-    Affiche le logo cliquable (lien vers mon site perso) si le chemin est valide, sinon affiche un warning.
-    """
+    """Affiche le logo existant sans modification"""
     if path and os.path.exists(path):
-        # Utiliser HTML pour afficher une image cliquable
         logo_html = f"""
         <a href="{cv_url}" target="_blank">
             <img src="data:image/png;base64,{get_base64_of_bin_file(path)}" width="{width}">
         </a>
         """
         st.markdown(logo_html, unsafe_allow_html=True)
-    else:
-        st.warning("Logo non trouvé.")
-
-
 
 def get_base64_of_bin_file(bin_file):
+    """Fonction utilitaire inchangée"""
     with open(bin_file, 'rb') as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
 def display_header():
-    """
-    Affiche le header avec le titre et le lien vers le site mon site perso poussaim.org.
-    """
+    """En-tête existant sans modification"""
     st.markdown("""
     <div style="text-align: center; max-width: 700px; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         <h1 style="color: #2E3B4E; font-weight: 700; letter-spacing: 1.2px; margin-bottom: 0.2rem;">
@@ -58,9 +45,7 @@ def display_header():
     """, unsafe_allow_html=True)
 
 def display_footer():
-    """
-    Affiche le footer avec copyright.
-    """
+    """Pied de page existant sans modification"""
     st.markdown("""
     <hr style="border-top: 2px solid #2E3B4E"/>
     <div style="text-align:center; color:gray; font-size: 0.9rem;">
@@ -68,88 +53,74 @@ def display_footer():
     </div>
     """, unsafe_allow_html=True)
 
-def create_input_form(input_names):
-    """
-    Crée un formulaire responsive avec 4 colonnes pour saisir les features.
-    Calcule et ajoute les features dérivées (water_cement_ratio, binder, fine_to_coarse_ratio).
 
-    Args:
-        input_names (list[str]): Noms des features de base.
-
-    Returns:
-        list[float]: Liste des valeurs des features de base + features dérivées.
-    """
-
+def create_input_form(input_names: List[str]) -> List[float]:
+    """Formulaire d'entrée avec validation améliorée mais même apparence"""
     cols = st.columns(4)
     inputs = []
+    
     for i, name in enumerate(input_names):
-        val = cols[i % 4].number_input(name.replace("_", " ").capitalize(), value=0.0, format="%.2f")
+        label = name.replace("_", " ").capitalize()
+        val = cols[i % 4].number_input(label, value=0.0, format="%.2f")
         inputs.append(val)
 
-    cement, slag, fly_ash, water, superplasticizer, coarse, fine, age = inputs
-    binder = cement + slag + fly_ash
-    wcr = water / (binder + 1e-6)
-    f2c = fine / (coarse + 1e-6)
-
-    return inputs + [wcr, binder, f2c]
-
-def call_prediction_api(api_url, features):
-    """
-    Envoie une requête POST à l'API pour une prédiction unique.
-
-    Args:
-        api_url (str): URL de base de l'API.
-        features (list): Liste des features (avec dérivées).
-
-    Returns:
-        dict: {success: bool, value/message: str}
-    """
-
+    # Calcul des features dérivées avec gestion d'erreur
     try:
-        response = requests.post(f"{api_url}/predict", json={"features": features})
-        if response.status_code == 200:
-            return {"success": True, "value": response.json()["predicted_strength_MPa"]}
-        else:
-            return {"success": False, "message": response.json().get("detail", "Erreur API")}
+        cement, slag, fly_ash, water, superplasticizer, coarse, fine, age = inputs[:8]
+        binder = cement + slag + fly_ash
+        wcr = water / (binder or 1e-6)  # Évite division par zéro
+        f2c = fine / (coarse or 1e-6)   # Évite division par zéro
+        return inputs + [wcr, binder, f2c]
+    except Exception:
+        return inputs + [0.0, 0.0, 0.0]  # Valeurs par défaut en cas d'erreur
+
+
+def call_prediction_api(api_url: str, features: List[float]) -> Dict:
+    """Appel API avec meilleure gestion des réponses JSON"""
+    feature_names = [
+        "cement", "slag", "fly_ash", "water", "superplasticizer",
+        "coarse_aggregate", "fine_aggregate", "age",
+        "water_cement_ratio", "binder", "fine_to_coarse_ratio"
+    ]
+    payload = {"features": dict(zip(feature_names, features))}
+    try:
+        response = requests.post(f"{api_url}/predict", json=payload, timeout=10)
+        if not response.content:
+            return {"success": False, "message": "Réponse vide de l'API"}
+        data = response.json()
+        return {
+            "success": True,
+            "value": float(data["predicted_strength_MPa"]),
+            "source": data.get("source", "model"),
+            "message": data.get("message")
+        }
+    except json.JSONDecodeError:
+        return {"success": False, "message": "Réponse API non valide (JSON malformé)"}
+    except requests.exceptions.RequestException as e:
+        return {"success": False, "message": f"Erreur de connexion: {str(e)}"}
+    except KeyError:
+        return {"success": False, "message": "Format de réponse API inattendu"}
     except Exception as e:
-        return {"success": False, "message": str(e)}
+        return {"success": False, "message": f"Erreur inattendue: {str(e)}"}
 
-def call_batch_prediction_api(api_url, file):
-    """
-    Envoie un fichier CSV à l'API pour une prédiction batch.
 
-    Args:
-        api_url (str): URL de base de l'API.
-        file (UploadedFile): Fichier CSV uploadé via Streamlit.
-
-    Returns:
-        dict: {success: bool, predictions/message: list/str}
-    """
-
+def call_batch_prediction_api(api_url: str, file) -> Dict:
+    """Version sécurisée pour les prédictions batch"""
     try:
         files = {"file": (file.name, file.getvalue(), "text/csv")}
-        response = requests.post(f"{api_url}/predict-batch", files=files)
-        if response.status_code == 200:
-            return {"success": True, "predictions": response.json()["predicted_strengths_MPa"]}
-        else:
-            return {"success": False, "message": response.json().get("detail", "Erreur API")}
-    except Exception as e:
-        return {"success": False, "message": str(e)}
-
-def show_input_instructions():
-    st.markdown("""
-    ### 🧾 Paramètres attendus pour la prédiction :
-
-    Le modèle prend en compte les 8 paramètres suivants (unité : kg/m³ sauf âge en jours) :
-
-    - **cement** : quantité de ciment   
-    - **slag** : laitier de haut fourneau  
-    - **fly_ash** : cendres volantes  
-    - **water** : quantité d’eau  
-    - **superplasticizer** : adjuvant  
-    - **coarse_aggregate** : granulats grossiers  
-    - **fine_aggregate** : granulats fins  
-    - **age** : durée de cure du béton (en jours)
-
-    Ces colonnes doivent être présentes dans le fichier CSV pour les prédictions en lot.
-    """)
+        response = requests.post(f"{api_url}/predict-batch", files=files, timeout=30)
+        if not response.content:
+            return {"success": False, "message": "Réponse vide de l'API batch"}   
+        data = response.json()
+        return {
+            "success": True,
+            "predictions": data["predicted_strengths_MPa"],
+            "messages": data.get("messages", []),
+            "source": data.get("source", "model")
+        }
+    except json.JSONDecodeError:
+        return {"success": False, "message": "Réponse batch non valide (JSON malformé)"}
+    except requests.exceptions.RequestException as e:
+        return {"success": False, "message": f"Erreur batch: {str(e)}"}
+    except KeyError:
+        return {"success": False, "message": "Format de réponse batch inattendu"}

@@ -1,17 +1,19 @@
 # src/api/schemas.py
 
-from pydantic import BaseModel, conlist
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict
 
 class PredictionInput(BaseModel):
     """
     Schéma d'entrée pour une prédiction unique.
 
     Attributs:
-        features (List[float]): Liste de 11 valeurs numériques correspondant aux features nécessaires,
-                                incluant les features dérivées (water_cement_ratio, binder, fine_to_coarse_ratio).
+        features (Dict[str, float]): Dictionnaire des features nécessaires,
+                                    incluant les features dérivées (water_cement_ratio, binder, fine_to_coarse_ratio).
     """
-    features: conlist(float, min_length=11, max_length=11)  # type: ignore
+    features: Dict[str, float] = Field(..., description="Dictionnaire des features avec clés : \
+                                       cement, slag, fly_ash, water, superplasticizer, coarse_aggregate, fine_aggregate, age, \
+                                       water_cement_ratio, binder, fine_to_coarse_ratio")
 
 class PredictionOutput(BaseModel):
     """
@@ -19,9 +21,12 @@ class PredictionOutput(BaseModel):
 
     Attributs:
         predicted_strength_MPa (str): Résultat de la prédiction sous forme de chaîne formatée.
+        message (Optional[str]): Message optionnel expliquant la source ou une règle métier.
+        source (Optional[str]): Source de la prédiction (model ou business_rule).
     """
-
     predicted_strength_MPa: str
+    message: Optional[str]
+    source: Optional[str]
 
 class BatchPredictionOutput(BaseModel):
     """
@@ -29,6 +34,9 @@ class BatchPredictionOutput(BaseModel):
 
     Attributs:
         predicted_strengths_MPa (List[float]): Liste des prédictions pour chaque entrée.
+        messages (List[Optional[str]]): Liste des messages optionnels pour chaque prédiction.
+        source (Optional[str]): Source globale de la prédiction batch.
     """
-    
     predicted_strengths_MPa: List[float]
+    messages: List[Optional[str]]
+    source: Optional[str]
