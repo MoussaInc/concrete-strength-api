@@ -8,13 +8,13 @@ from typing import Dict, List, Optional
 
 
 def load_custom_css(css_path="src/dashboard/static/style.css"):
-    """Charge le CSS existant sans modification"""
+    """Chargement du CSS"""
     if os.path.exists(css_path):
         with open(css_path) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 def display_logo(path="src/dashboard/static/images/logo.png", width=100, cv_url="https://www.poussaim.org"):
-    """Affiche le logo existant sans modification"""
+    """Affichage du logo"""
     if path and os.path.exists(path):
         logo_html = f"""
         <a href="{cv_url}" target="_blank">
@@ -24,13 +24,11 @@ def display_logo(path="src/dashboard/static/images/logo.png", width=100, cv_url=
         st.markdown(logo_html, unsafe_allow_html=True)
 
 def get_base64_of_bin_file(bin_file):
-    """Fonction utilitaire inchangée"""
     with open(bin_file, 'rb') as f:
         data = f.read()
     return base64.b64encode(data).decode()
 
 def display_header():
-    """En-tête existant sans modification"""
     st.markdown("""
     <div style="text-align: center; max-width: 700px; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         <h1 style="color: #2E3B4E; font-weight: 700; letter-spacing: 1.2px; margin-bottom: 0.2rem;">
@@ -45,7 +43,6 @@ def display_header():
     """, unsafe_allow_html=True)
 
 def display_footer():
-    """Pied de page existant sans modification"""
     st.markdown("""
     <hr style="border-top: 2px solid #2E3B4E"/>
     <div style="text-align:center; color:gray; font-size: 0.9rem;">
@@ -55,10 +52,9 @@ def display_footer():
 
 
 def create_input_form(input_names: List[str]) -> List[float]:
-    """Formulaire d'entrée avec validation améliorée mais même apparence"""
+    """Formulaire avec validation des entrees"""
     cols = st.columns(4)
     inputs = []
-    
     for i, name in enumerate(input_names):
         label = name.replace("_", " ").capitalize()
         val = cols[i % 4].number_input(label, value=0.0, format="%.2f")
@@ -76,7 +72,6 @@ def create_input_form(input_names: List[str]) -> List[float]:
 
 
 def call_prediction_api(api_url: str, features: List[float]) -> Dict:
-    """Appel API avec gestion des réponses JSON"""
     feature_names = [
         "cement", "slag", "fly_ash", "water", "superplasticizer",
         "coarse_aggregate", "fine_aggregate", "age",
@@ -105,7 +100,6 @@ def call_prediction_api(api_url: str, features: List[float]) -> Dict:
 
 
 def call_batch_prediction_api(api_url: str, file) -> Dict:
-    """Version sécurisée pour les prédictions batch"""
     try:
         files = {"file": (file.name, file.getvalue(), "text/csv")}
         response = requests.post(f"{api_url}/predict-batch", files=files, timeout=30)

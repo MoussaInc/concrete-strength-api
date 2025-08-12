@@ -23,9 +23,7 @@ API_URL = os.getenv("API_URL")
 #st.sidebar.markdown(f"🌐 API URL: `{API_URL}`")
 
 # Liste des paramètres 
-INPUT_NAMES = ["cement", "slag", "fly_ash", "water",
-    "superplasticizer", "coarse_aggregate", "fine_aggregate", "age"
-]
+INPUT_NAMES = ["cement", "slag", "fly_ash", "water", "superplasticizer", "coarse_aggregate", "fine_aggregate", "age"]
 
 # Instructions
 st.markdown("""

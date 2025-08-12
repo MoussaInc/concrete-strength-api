@@ -20,7 +20,7 @@ class PredictionOutput(BaseModel):
     Schéma de sortie pour une prédiction unique.
 
     Attributs:
-        predicted_strength_MPa (str): Résultat de la prédiction sous forme de chaîne formatée.
+        predicted_strength_MPa (float): Résultat de la prédiction.
         message (Optional[str]): Message optionnel expliquant la source ou une règle métier.
         source (Optional[str]): Source de la prédiction (model ou business_rule).
     """
