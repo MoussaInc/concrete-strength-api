@@ -76,7 +76,7 @@ def create_input_form(input_names: List[str]) -> List[float]:
 
 
 def call_prediction_api(api_url: str, features: List[float]) -> Dict:
-    """Appel API avec meilleure gestion des réponses JSON"""
+    """Appel API avec gestion des réponses JSON"""
     feature_names = [
         "cement", "slag", "fly_ash", "water", "superplasticizer",
         "coarse_aggregate", "fine_aggregate", "age",

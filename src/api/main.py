@@ -106,21 +106,14 @@ async def predict_batch(file: UploadFile = File(...)):
 
         missing_cols = [col for col in BASE_FEATURES if col not in df.columns]
         if missing_cols:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Colonnes manquantes : {', '.join(missing_cols)}"
-            )
+            raise HTTPException(status_code=400, detail=f"Colonnes manquantes : {', '.join(missing_cols)}")
 
         for col in BASE_FEATURES:
             df[col] = df[col].astype(float)
 
-        df["water_cement_ratio"] = df.apply(
-            lambda row: safe_divide(row["water"], row["cement"]), axis=1
-        )
+        df["water_cement_ratio"] = df.apply(lambda row: safe_divide(row["water"], row["cement"]), axis=1)
         df["binder"] = df["cement"] + df["slag"] + df["fly_ash"]
-        df["fine_to_coarse_ratio"] = df.apply(
-            lambda row: safe_divide(row["fine_aggregate"], row["coarse_aggregate"]), axis=1
-        )
+        df["fine_to_coarse_ratio"] = df.apply(lambda row: safe_divide(row["fine_aggregate"], row["coarse_aggregate"]), axis=1)
 
         preds_raw = model.predict(df[ALL_FEATURES])
         preds_clamped = []

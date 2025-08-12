@@ -24,7 +24,7 @@ class PredictionOutput(BaseModel):
         message (Optional[str]): Message optionnel expliquant la source ou une règle métier.
         source (Optional[str]): Source de la prédiction (model ou business_rule).
     """
-    predicted_strength_MPa: str
+    predicted_strength_MPa: float
     message: Optional[str]
     source: Optional[str]
 
