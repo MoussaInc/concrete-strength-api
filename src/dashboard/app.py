@@ -20,7 +20,7 @@ display_header()
 # Configuration API
 #API_URL = os.getenv("API_URL", "http://api:8000")
 API_URL = os.getenv("API_URL")
-st.sidebar.markdown(f"🌐 API URL: `{API_URL}`")
+#st.sidebar.markdown(f"🌐 API URL: `{API_URL}`")
 
 # Liste des paramètres 
 INPUT_NAMES = ["cement", "slag", "fly_ash", "water",
